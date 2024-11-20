@@ -17,44 +17,65 @@ def reconstruct_path(came_from, current, draw):
     return path
 
 
-def a_star_algorithm(draw,grid,start,end):
+def a_star_algorithm(draw, grid, start, end):
+    # Counter for tie-breaking in the priority queue
     count = 0
+    # Priority queue to store nodes to explore, ordered by their f_score
     open_set = PriorityQueue()
+    # Add the starting node to the open set with an initial f_score of 0
     open_set.put((0, count, start))
+    # Dictionary to keep track of the most efficient path
     came_from = {}
+    
+    # Initialize g_score for all nodes to infinity, except the start node
     g_score = {node: float("inf") for row in grid for node in row}
-    g_score[start] = 0
+    g_score[start] = 0  # Cost from start to start is 0
+    
+    # Initialize f_score for all nodes to infinity, except the start node
     f_score = {node: float("inf") for row in grid for node in row}
-    f_score[start] = h(start.get_position(), end.get_position())
+    f_score[start] = h(start.get_position(), end.get_position())  # Estimate cost to reach the end from the start
 
+    # Set to keep track of nodes currently in the open set
     open_set_hash = {start}
 
+    # Main loop to process nodes in the open set
     while not open_set.empty():
+        # Handle user events (e.g., quitting the application)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
 
+        # Get the node with the lowest f_score from the priority queue
         current = open_set.get()[2]
         open_set_hash.remove(current)
 
+        # If we have reached the goal, reconstruct the path
         if current == end:
             path = reconstruct_path(came_from, end, draw)
-            end.make_end()
+            end.make_end()  # Mark the end node visually
             return path
-        
-        for neighbor in current.neighbors:
-            temp_g_score = g_score[current] + 1
 
+        # Explore neighbors of the current node
+        for neighbor in current.neighbors:
+            # Calculate tentative g_score for the neighbor
+            temp_g_score = g_score[current] + 1  # Assume a uniform cost of 1 for each step
+
+            # If this path to neighbor is better, update path information
             if temp_g_score < g_score[neighbor]:
                 came_from[neighbor] = current
                 g_score[neighbor] = temp_g_score
+                # Update f_score with the heuristic estimate
                 f_score[neighbor] = temp_g_score + h(neighbor.get_position(), end.get_position())
+                # If neighbor is not already in the open set, add it
                 if neighbor not in open_set_hash:
                     count += 1
                     open_set.put((f_score[neighbor], count, neighbor))
                     open_set_hash.add(neighbor)
-                    neighbor.make_open()
+                    neighbor.make_open()  # Mark the neighbor as being considered
+
+        # Redraw the grid to visually update the search progress
         draw()
 
+        # Mark the current node as processed if it is not the start node
         if current != start:
             current.make_closed()
