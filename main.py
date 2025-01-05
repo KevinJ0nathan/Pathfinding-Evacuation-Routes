@@ -50,9 +50,11 @@ def get_clicked_position(position, rows, width):
 
 # Main loop
 def main(window, width):
+    # Constants for map
     ROWS = 50
     grid = make_grid(ROWS, width)
 
+    # Constants for
     start = None
     end = None
     survivor = None
@@ -60,17 +62,23 @@ def main(window, width):
     run = True
     path = []
     dup_path = []
-
+    survivors = 0
     while run:
         draw(window, grid, ROWS, width)
+
+        # When the survivor is traversing the path
         if survivor and path:
             next_node = path.pop(0)
             survivor.move_to(next_node)
             survivor.draw(window)
             pygame.display.update()
-            pygame.time.delay(100)
+            pygame.time.delay(30)
+
+        # When the survivor reached the path
         elif survivor and not path:
             path = dup_path[:]
+            survivors += 1
+            print(survivors)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -83,7 +91,7 @@ def main(window, width):
                 # If the start node is not created yet, create a start node
                 if not start and node != end:
                     start = node
-                    node.make_start()
+                    start.make_start()
                 # If the end node is not created yet, create an end node
                 elif not end and node != start:
                     end = node
@@ -106,7 +114,7 @@ def main(window, width):
                     for row in grid:
                         for node in row:
                             node.update_neighbors(grid)
-                    path = a_star_algorithm(lambda: draw(window, grid, ROWS, width), grid, start, end)
+                    path = dijkstra_algorithm(lambda: draw(window, grid, ROWS, width), grid, start, end)
                     if path:
                         survivor = Survivor(start)
                         dup_path = path[:]
