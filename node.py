@@ -15,6 +15,9 @@ class Node:
     def get_position(self):
         return self.row, self.col
     
+    def get_color(self):
+         return self.color
+    
     def is_closed(self):
         return self.color == RED
     
@@ -30,6 +33,9 @@ class Node:
     def is_end(self):
         return self.color == TURQUOISE
     
+    def is_path(self):
+        return self.color == PURPLE
+
     def reset(self):
         self.color = WHITE
     
@@ -54,21 +60,38 @@ class Node:
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.width))
 
-
-    def update_neighbors(self,grid):
+    def update_neighbors(self, grid):
         self.neighbors = []
-        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_barrier(): # DOWN
-                self.neighbors.append(grid[self.row + 1][self.col])
+        # Check the DOWN neighbor
+        if (
+            self.row < self.total_rows - 1
+            and not grid[self.row + 1][self.col].is_barrier()
+        ):
+            self.neighbors.append(grid[self.row + 1][self.col])
 
-        if self.row > 0 and not grid[self.row - 1][self.col].is_barrier(): # UP
-                self.neighbors.append(grid[self.row - 1][self.col])
+        # Check the UP neighbor
+        if (
+            self.row > 0
+            and not grid[self.row - 1][self.col].is_barrier()
+        ):
+            self.neighbors.append(grid[self.row - 1][self.col])
 
-        if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_barrier(): # RIGHT
-                self.neighbors.append(grid[self.row][self.col + 1])
+        # Check the RIGHT neighbor
+        if (
+            self.col < self.total_rows - 1
+            and not grid[self.row][self.col + 1].is_barrier()
+        ):
+            self.neighbors.append(grid[self.row][self.col + 1])
 
-        if self.col > 0 and not grid[self.row][self.col - 1].is_barrier(): # LEFT
-                self.neighbors.append(grid[self.row][self.col - 1])
+        # Check the LEFT neighbor
+        if (
+            self.col > 0
+            and not grid[self.row][self.col - 1].is_barrier()
+        ):
+            self.neighbors.append(grid[self.row][self.col - 1])
+
     def __lt__(self,other):
         return False
-
+    def __str__(self):
+        return f"Node(row={self.row}, col={self.col})"
     
