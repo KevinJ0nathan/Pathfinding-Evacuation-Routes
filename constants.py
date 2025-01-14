@@ -1,5 +1,6 @@
 # For the game window
-WIDTH = 800
+WIDTH = 900
+
 # Colors
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
